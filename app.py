@@ -91,7 +91,6 @@ def load_target_labels():
                 return json.load(f)
         except:
             pass
-    # Fallback to standard 36 classes commonly used in Kaggle fruit/veg datasets
     return [
         "Apple", "Banana", "Beetroot", "Cabbage", "Capsicum", "Carrot", "Cauliflower",
         "Chilli Pepper", "Corn", "Cucumber", "Eggplant", "Garlic", "Ginger", "Grapes",
@@ -146,7 +145,7 @@ with tabs[0]:
         st.markdown("##### 📈 Forward Array Activations")
         z = x1*w1 + x2*w2 + b
         a = 1 / (1 + np.exp(-z))
-        loss = 0.5 * (a - 1.0)**2 # Target defaulting to 1.0 (binary ground truth mapping)
+        loss = 0.5 * (a - 1.0)**2
         
         st.code(f"Linear Combination (z) = {z:.4f}\nSigmoid Map Activation (a) = {a:.4f}\nMean Squared Error Loss = {loss:.4f}")
         st.markdown('</div>', unsafe_allow_html=True)
@@ -241,47 +240,7 @@ with tabs[2]:
             st.image(feature_map, use_container_width=True, channels="L")
             st.success("Matrix 2D spatial extraction map compiled successfully!")
     else:
-      st.info("💡 Drop an image inside the workspace above to unlock live matrix pixel arrays and edge contour visualizations.")
-      st.markdown('', unsafe_allow_html=True)
+        st.info("💡 Drop an image inside the workspace above to unlock live matrix pixel arrays and edge contour visualizations.")
+    st.markdown('</div>', unsafe_allow_html=True)
 
-==========================================
-
-
-TAB 4: LIVE SCAN PRODUCTION INFERENCE
-
-
-==========================================
-
-with tabs[3]:
-st.subheader("Keras Core Target Inference")
-if model is None:
-st.info("💡 Evaluation pipeline offline. To serve active inferences, push your 'Fruite_and_veg_model.keras' array using Git LFS setup commands into your cloud branch repository.")
-else:
-st.markdown('', unsafe_allow_html=True)
-prod_upload = st.file_uploader("Upload target sample matrix for class processing", type=["jpg", "jpeg", "png"], key="inference_system_uploader")
-if prod_upload is not None:
-col_inf1, col_inf2 = st.columns([1, 1.2], gap="medium")
-target_image = Image.open(prod_upload)
-with col_inf1:
-st.image(target_image, caption="Inference Object Buffer", width=280)
-# Preprocessing configuration parameters matching standard image batch pipelines
-resized_matrix = target_image.resize((180, 180))
-input_tensor = np.array(resized_matrix)
-# Normalization and dimensionality expands check
-if input_tensor.shape[-1] == 4:  # Strip transparency matrix channel if present
-input_tensor = input_tensor[..., :3]
-input_tensor = input_tensor / 255.0
-input_tensor = np.expand_dims(input_tensor, axis=0)
-with col_inf2:
-if st.button("Execute Model Evaluation", use_container_width=True):
-with st.spinner("Processing structural network nodes array..."):
-raw_logits = model.predict(input_tensor)
-# Dynamic softmax activation layer computation array
-softmax_activation = np.exp(raw_logits - np.max(raw_logits))
-distribution_probabilities = softmax_activation / softmax_activation.sum()
-max_target_index = np.argmax(distribution_probabilities)
-confidence_score = distribution_probabilities[0][max_target_index] * 100
-st.markdown("### 🏆 Prediction Diagnostics Summary")
-st.metric(label="Detected Structural Target", value=str(class_names[max_target_index]))
-st.metric(label="Model Backbone Confidence Rating", value=f"{confidence_score:.2f}%")
-st.markdown('', unsafe_allow_html=True)
+# ==========================================
