@@ -247,3 +247,20 @@ with tabs:
     if model is None:
         st.info("💡 To analyze active production pipelines, ensure 'Fruite_and_veg_model.keras' is fully pushed via Git LFS into your working branch folder.")
     else:
+        st.markdown('', unsafe_allow_html=True)
+uploaded_file = st.file_uploader("Upload Fruit/Vegetable Image for Prediction", type=["jpg", "jpeg", "png"], key="predict_uploader")
+if uploaded_file is not None:
+img = Image.open(uploaded_file)
+st.image(img, caption="Target Scan Subject", width=250)
+# Preprocessing matching notebook config
+img_resized = img.resize((180, 180))
+img_array = np.array(img_resized) / 255.0
+img_array = np.expand_dims(img_array, axis=0)
+if st.button("Run Model Prediction", use_container_width=True):
+with st.spinner("Executing dense array classification..."):
+predictions = model.predict(img_array)
+exp_preds = np.exp(predictions - np.max(predictions))
+probabilities = exp_preds / exp_preds.sum()
+top_idx = np.argmax(probabilities)
+st.success(f"🎯 Predicted Target: {class_names[top_idx]} ({probabilities[top_idx]*100:.2f}%)")
+st.markdown('', unsafe_allow_html=True)
