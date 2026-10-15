@@ -2,4 +2,5 @@ streamlit
 tensorflow
 numpy
 matplotlib
-gdown
+scipy
+pillow
